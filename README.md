@@ -1,4 +1,5 @@
 # 📦 Data-Engineering
+
 Cloud‑ready data engineering portfolio: BigQuery, GCS, Cloud Run, Vertex AI, and PDE‑aligned projects.
 
 [![Google Cloud](https://img.shields.io/badge/Google%20Cloud-GCP-blueviolet)](https://cloud.google.com/)
@@ -8,37 +9,46 @@ Cloud‑ready data engineering portfolio: BigQuery, GCS, Cloud Run, Vertex AI, a
 [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](https://www.python.org/)
 [![Terraform](https://img.shields.io/badge/Terraform-623CE4?logo=terraform&logoColor=fff)](https://www.terraform.io/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-00599C?logo=fastapi&logoColor=fff)](https://fastapi.tiangolo.com/)
-[![PDE](https://img.shields.io/badge/PDE--Ready-Professional_Data_Engineer-000000?logo=googlecloud)](https://cloud.google.com/learn/certification/data-engineer)
+[![Google PDE](https://img.shields.io/badge/Google%20PDE-Aligned-success)](https://cloud.google.com/learn/certification/data-engineer)
 
+---
 
-A cloud‑ready **financial data engineering platform** that ingests market data into **Google Cloud Storage (GCS)**, transforms it into analytics‑ready **BigQuery** tables, and exposes curated datasets for dashboards and AI‑assisted financial analysis. This repo is designed as a **PDE‑aligned portfolio** for BigQuery, orchestration, cost‑aware design, and ML extension via Vertex AI.
+## 📘 About
+
+This repo is a **PDE‑aligned data engineering portfolio** built around a **financial‑data platform**: ingest market data into **Google Cloud Storage (GCS)**, transform it into analytics‑ready **BigQuery** tables, and expose curated datasets via **FastAPI on Cloud Run**. Future phases will integrate **Vertex AI** for AI‑assisted market commentary, summarization, and forecasting.  
+
+This structure is intentionally aligned with Google’s **Professional Data Engineer** exam domains:
+- BigQuery technical architecture  
+- Data ingestion and processing pipelines  
+- Orchestration, security, CI/CD, and cost‑aware design  
+- Operationalization of ML models  
 
 ---
 
 ## ✨ Key Features
 
-- **End‑to‑end pipeline design**  
+- **End‑to‑end financial data pipeline**  
   `GCS` → `BigQuery` → `FastAPI` (Cloud Run) → `Vertex AI`  
-- **Production‑grade architecture**  
-  Partitioned, clustered tables, event‑triggered ingestion, IAM‑aware deployment.  
+- **Production‑grade warehouse design**  
+  Partitioned and clustered BigQuery tables, cost‑aware queries, and idempotent ingestion patterns.  
 - **PDE‑style coverage**  
-  BigQuery, Dataflow, orchestration, CI/CD, IAM, cost‑aware design, monitoring hooks.  
+  BigQuery, Dataflow, orchestration, CI/CD, IAM, monitoring, and ML‑ready extension via Vertex AI.  
 
 ---
 
 ## 📌 PDE Exam Alignment
 
-This repo is structured so each project directly maps to **Google Professional Data Engineer (PDE)** exam topics:
+Each project maps directly to at least one **Google Professional Data Engineer (PDE)** exam topic:
 
 - **BigQuery technical architecture**  
-- **Data ingestion** (GCS, streaming, API pull)  
+- **Data ingestion** (GCS, API, batch/streaming)  
 - **Data processing** (SQL, Dataflow, stored procedures)  
-- **Pipeline orchestration** (Cloud Functions, Eventarc, Scheduler)  
+- **Pipeline orchestration** (Cloud Functions, Eventarc, Cloud Scheduler)  
 - **Security & access control** (IAM, service accounts)  
-- **CI/CD & IaC**  
+- **CI/CD & IaC** (Terraform, GitHub Actions)  
 - **Reliability, availability, and scalability**  
-- **Cost optimization** (partitioning, clustering, materialized views)  
-- **Operationalization of ML models** (Vertex AI)  
+- **Cost optimization** (partitioning, clustering, materialized views, scan‑avoidance)  
+- **Operationalization of ML models** (Vertex AI, model‑serving patterns)  
 
 ---
 
@@ -77,12 +87,12 @@ flowchart TB
 ### 📂 Core Layers
 
 1. **Data pipeline layer**  
-   - Stock data ingestion from CSV/API, validation, cleaning, normalization, and feature generation (e.g., moving averages, volatility, returns).  
-   - Data quality rules, deduplication, schema evolution handling.  
+   - Stock data ingestion from CSV/API sources, validation, cleaning, normalization, and feature generation (e.g., moving averages, volatility, returns).  
+   - Data quality rules, deduplication, and schema‑evolution handling.  
 
 2. **Warehouse layer**  
    - GCS raw staging.  
-   - BigQuery tables partitioned by `date`, clustered by `ticker` or `exchange`.  
+   - BigQuery tables partitioned by `date` and clustered by `ticker` or `exchange`.  
    - Cost‑aware SQL patterns (partition pruning, clustering, views, materialized views).  
 
 3. **Serving layer**  
@@ -94,7 +104,7 @@ flowchart TB
    - Optional scheduled jobs (Cloud Scheduler / Dataflow).  
 
 5. **AI/ML extension**  
-   - Phase 1: Local **Ollama** (Qwen2.5) for experimental explanations, commentary.  
+   - Phase 1: Local **Ollama** (Qwen2.5) for experimental explanations and commentary.  
    - Phase 2: **Vertex AI** for production‑grade summarization, forecasting experiments, or RAG‑style market commentary.  
 
 ---
@@ -102,7 +112,7 @@ flowchart TB
 ## 🗂️ Repo Structure
 
 ```text
-financial-data-engineering-pipeline/
+Data-Engineering/
 ├── README.md
 ├── architecture/
 │   ├── system-design.png
@@ -187,38 +197,38 @@ financial-data-engineering-pipeline/
 
 Use this list as **backlog** and **exam‑mapping**. Each project corresponds to at least one PDE topic.
 
-1. **BigQuery Table Design & Partitioning**
+1. **BigQuery Table Design & Partitioning**  
    - Create bronze/raw tables partitioned by `ingest_date`.  
    - Create silver/curated tables partitioned by `business_date` and clustered by `ticker`.  
    - Document cost‑savings vs unpartitioned baseline.  
    - Maps to: **BigQuery technical architecture, cost optimization**.
 
-2. **Bulk Ingestion from GCS to BigQuery**
+2. **Bulk Ingestion from GCS to BigQuery**  
    - Upload CSV/API files to GCS, then load into BigQuery via `bq load`, scheduled SQL, or Dataflow.  
    - Implement schema evolution policy (when to add columns vs new tables).  
    - Maps to: **Data ingestion, schema design, pipeline reliability**.
 
-3. **Incremental Event‑Triggered Loading**
+3. **Incremental Event‑Triggered Loading**  
    - On GCS upload event, Cloud Functions calls a BigQuery load or transformation job.  
    - Add idempotent design and error‑replay patterns.  
    - Maps to: **Data ingestion, event‑based orchestration, pipeline reliability**.
 
-4. **SQL‑Only ETL: Bronze → Silver → Gold**
+4. **SQL‑Only ETL: Bronze → Silver → Gold**  
    - Use scheduled BigQuery scripts to transform raw tables into analytics‑ready tables.  
    - Add checks, rollbacks, and data quality tests.  
    - Maps to: **Data transformation, cost‑aware SQL, data quality**.
 
-5. **Dataflow Pipeline (Python)**
+5. **Dataflow Pipeline (Python)**  
    - Rewrite one SQL ETL as a Beam/Python Dataflow pipeline.  
    - Show scaling on large datasets and streaming vs batch thoughts.  
    - Maps to: **Batch & streaming processing, pipeline design**.
 
-6. **FastAPI on Cloud Run**
+6. **FastAPI on Cloud Run**  
    - Deploy a FastAPI service that queries BigQuery and exposes REST endpoints.  
    - Use service‑account auth, connection pooling, and time‑out resilience.  
    - Maps to: **Architecture design, serving patterns, HTTP APIs**.
 
-7. **IAM & Service Accounts**
+7. **IAM & Service Accounts**  
    - Define minimal‑privilege roles for:  
      - GCS reader,  
      - BigQuery data editor,  
@@ -227,17 +237,17 @@ Use this list as **backlog** and **exam‑mapping**. Each project corresponds to
    - Save as Terraform + IAM documentation.  
    - Maps to: **Security & access control, IAM, policy**.
 
-8. **CI/CD with GitHub Actions**
+8. **CI/CD with GitHub Actions**  
    - Build Docker images, run tests, deploy FastAPI to Cloud Run, deploy pipelines to GCP.  
    - Use `.github/workflows` and environment variables.  
    - Maps to: **CI/CD, IaC, DevOps**.
 
-9. **Monitoring & Observability Hooks**
+9. **Monitoring & Observability Hooks**  
    - Add logging, basic metrics (e.g., ingestion throughput), and alerting hooks (Cloud Logging, Error Reporting).  
    - Document how to monitor pipeline health.  
    - Maps to: **Reliability, availability, scalability**.
 
-10. **Vertex AI Experimentation Layer**
+10. **Vertex AI Experimentation Layer**  
     - Use Vertex AI LLM or custom models for:  
       - summarization of market moves,  
       - commentary on anomalous price/volume,  
@@ -249,7 +259,7 @@ Use this list as **backlog** and **exam‑mapping**. Each project corresponds to
 
 ## 🚀 Quick Start
 
-1. **Prerequisites**
+1. **Prerequisites**  
    - Google Cloud project with billing enabled.  
    - `gcloud` CLI, `bq` CLI, and `kubectl` installed.  
    - Python 3.10+ and `pip` / `venv`.
@@ -318,7 +328,7 @@ curl https://financial-dashboard-api-<region>.run.app/stocks/AAPL/last
 ## 📚 PDE Study Guide (High‑Level)
 
 - **BigQuery**  
-  - Partitioning, clustering, materialized views, performance tuning, cost control.  
+  - Partitioning, clustering, materialized views, performance tuning, cost‑aware design.  
 - **Data ingestion**  
   - GCS, BigQuery streaming vs batch, audit logs, idempotent loads.  
 - **Data processing**  
@@ -340,7 +350,7 @@ curl https://financial-dashboard-api-<region>.run.app/stocks/AAPL/last
 
 ## 🤝 Contributing & Feedback
 
-Contributions and improvements are welcome. Please open an issue or PR with:
+Contributions and improvements are welcome. Please open an issue or PR with:  
 - Better queries or partitioning strategies.  
 - Additional PDE‑aligned example projects.  
 - New metrics or monitoring patterns.  
