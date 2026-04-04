@@ -1,6 +1,15 @@
 # Data-Engineering
 Cloud‑ready data engineering portfolio: BigQuery, GCS, Cloud Run, Vertex AI, and PDE‑aligned projects.
 
+[![Google Cloud](https://img.shields.io/badge/Google%20Cloud-GCP-blueviolet)](https://cloud.google.com/)
+[![BigQuery](https://img.shields.io/badge/BigQuery-FE7A16?logo=googlecloud&logoColor=fff)](https://cloud.google.com/bigquery)
+[![Vertex AI](https://img.shields.io/badge/Vertex%20AI-4285F4?logo=googlecloud&logoColor=fff)](https://cloud.google.com/vertex-ai)
+[![Cloud Run](https://img.shields.io/badge/Cloud%20Run-4285F4?logo=googlecloud&logoColor=fff)](https://cloud.google.com/run)
+[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](https://www.python.org/)
+[![Terraform](https://img.shields.io/badge/Terraform-623CE4?logo=terraform&logoColor=fff)](https://www.terraform.io/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-00599C?logo=fastapi&logoColor=fff)](https://fastapi.tiangolo.com/)
+[![PDE](https://img.shields.io/badge/PDE--Ready-Professional_Data_Engineer-000000?logo=googlecloud)](https://cloud.google.com/learn/certification/data-engineer)
+
 # 📦 financial-data-engineering-pipeline
 
 A cloud‑ready **financial data engineering platform** that ingests market data into **Google Cloud Storage (GCS)**, transforms it into analytics‑ready **BigQuery** tables, and exposes curated datasets for dashboards and AI‑assisted financial analysis. This repo is designed as a **PDE‑aligned portfolio** for BigQuery, orchestration, cost‑aware design, and ML extension via Vertex AI.
