@@ -1,4 +1,4 @@
-# Data-Engineering
+# 📦 Data-Engineering
 Cloud‑ready data engineering portfolio: BigQuery, GCS, Cloud Run, Vertex AI, and PDE‑aligned projects.
 
 [![Google Cloud](https://img.shields.io/badge/Google%20Cloud-GCP-blueviolet)](https://cloud.google.com/)
@@ -10,7 +10,6 @@ Cloud‑ready data engineering portfolio: BigQuery, GCS, Cloud Run, Vertex AI, a
 [![FastAPI](https://img.shields.io/badge/FastAPI-00599C?logo=fastapi&logoColor=fff)](https://fastapi.tiangolo.com/)
 [![PDE](https://img.shields.io/badge/PDE--Ready-Professional_Data_Engineer-000000?logo=googlecloud)](https://cloud.google.com/learn/certification/data-engineer)
 
-# 📦 financial-data-engineering-pipeline
 
 A cloud‑ready **financial data engineering platform** that ingests market data into **Google Cloud Storage (GCS)**, transforms it into analytics‑ready **BigQuery** tables, and exposes curated datasets for dashboards and AI‑assisted financial analysis. This repo is designed as a **PDE‑aligned portfolio** for BigQuery, orchestration, cost‑aware design, and ML extension via Vertex AI.
 
