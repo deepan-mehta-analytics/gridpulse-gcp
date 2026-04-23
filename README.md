@@ -325,7 +325,7 @@ curl https://financial-dashboard-api-<region>.run.app/stocks/AAPL/last
 
 ---
 
-## 📚 PDE Study Guide (High‑Level)
+## 📚 PDE Study Guide 
 
 - **BigQuery**  
   - Partitioning, clustering, materialized views, performance tuning, cost‑aware design.  
