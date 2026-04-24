@@ -17,7 +17,7 @@ Cloud‑ready data engineering portfolio: BigQuery, GCS, Cloud Run, Vertex AI, a
 
 This repo is a **PDE‑aligned data engineering portfolio** built around a **financial‑data platform**: ingest market data into **Google Cloud Storage (GCS)**, transform it into analytics‑ready **BigQuery** tables, and expose curated datasets via **FastAPI on Cloud Run**. Future phases will integrate **Vertex AI** for AI‑assisted market commentary, summarization, and forecasting.  
 
-This structure is intentionally aligned with Google’s **Professional Data Engineer** exam domains:
+This structure is intentionally aligned with  **Data Engineer** exam domains:
 - BigQuery technical architecture  
 - Data ingestion and processing pipelines  
 - Orchestration, security, CI/CD, and cost‑aware design  
@@ -38,7 +38,7 @@ This structure is intentionally aligned with Google’s **Professional Data Engi
 
 ## 📌 PDE Exam Alignment
 
-Each project maps directly to at least one **Google Professional Data Engineer (PDE)** exam topic:
+Each project maps directly to at least one **Professional Data Engineer (PDE)** exam topic:
 
 - **BigQuery technical architecture**  
 - **Data ingestion** (GCS, API, batch/streaming)  
@@ -193,7 +193,7 @@ Data-Engineering/
 
 ---
 
-## 📚 Google PDE‑Aligned Project List
+## 📚 Data Engineer‑Aligned Project List
 
 Use this list as **backlog** and **exam‑mapping**. Each project corresponds to at least one PDE topic.
 
@@ -325,7 +325,7 @@ curl https://financial-dashboard-api-<region>.run.app/stocks/AAPL/last
 
 ---
 
-## 📚 PDE Study Guide 
+## 📚 Data Emgineer Study Guide 
 
 - **BigQuery**  
   - Partitioning, clustering, materialized views, performance tuning, cost‑aware design.  
