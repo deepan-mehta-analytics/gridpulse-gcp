@@ -248,7 +248,7 @@ gridpulse-gcp/
 ├── docker-compose.yml         ← local emulator stack (Pub/Sub, Bigtable, Postgres, MinIO, Spark, Airflow…)
 ├── .env.example                ← placeholder config, no real identifiers
 ├── CLAUDE.md                  ← project-level agent guardrails, extends the global config
-├── docs/
+├── docs/                       ← exam-guide map, ADRs, data-source + cost docs
 │   ├── exam-guide-map.md      ← every v4.2 sub-objective → file → status
 │   ├── exam-guide-delta.md    ← tracks changes to the published exam guide
 │   ├── data-sources.md        ← source, licence, cadence, attribution per feed
@@ -257,41 +257,41 @@ gridpulse-gcp/
 │       ├── 0001-bitemporal-restatement-model.md
 │       ├── 0002-bigtable-vs-bigquery-hot-lookups.md
 │       └── 0003-masking-policy-household-data.md
-├── infra/
+├── infra/                      ← Terraform IaC + IAM baseline, local-twin + cloud parameterised
 │   ├── terraform/              ← IaC, one module per service, local-twin + cloud parameterised
 │   └── iam/                    ← least-privilege service-account definitions
-├── ingest/
+├── ingest/                      ← Cloud Run collectors, bronze contracts, CDC
 │   ├── collectors/              ← Cloud Run push/poll collectors
 │   ├── contracts/                ← versioned bronze schema contracts
 │   └── cdc/                      ← Datastream/Debezium change-data-capture config
-├── transform/
+├── transform/                   ← Beam windowing, Dataform SQLX marts, Spark backfill
 │   ├── beam/                    ← event-time windowing pipeline
 │   ├── dataform/                ← silver/gold SQLX transforms + assertions
 │   └── spark/                   ← batch backfill jobs
-├── govern/
+├── govern/                       ← Dataplex zones/DQ scans, DLP profiling, policy-tag masking
 │   ├── dataplex/                ← zones, catalog config, DQ scans
 │   ├── dlp/                     ← PII profiling jobs
 │   └── policy_tags/              ← column-level masking policies
-├── ml/
+├── ml/                            ← BQML forecasting/classification, embeddings + vector index
 │   ├── forecasting/              ← BQML ARIMA_PLUS demand forecast
 │   ├── classification/           ← boosted-tree imbalance-spike classifier
 │   └── embeddings/                ← vector index over market notices
-├── agents/
+├── agents/                        ← Analyst/Ops/RAG agent tiers + eval harness
 │   ├── analyst/                  ← Conversational Analytics API tier
 │   ├── ops/                      ← Restatement Sentinel, DQ Steward, Market Context agents
 │   ├── rag/                       ← retrieval layer over embeddings
 │   └── eval/                      ← golden-question CI eval harness
-├── serving/
+├── serving/                        ← FastAPI gold-mart API + Cloud Run deployment config
 │   ├── fastapi/                  ← gold-mart API
 │   └── cloud_run/                ← deployment config
-├── orchestrate/
+├── orchestrate/                     ← Airflow/Composer DAGs, Cloud Workflows
 │   ├── dags/                       ← Airflow/Composer DAGs
 │   └── workflows/                  ← Cloud Workflows definitions
-├── ops/
+├── ops/                              ← Monitoring, DR runbook, Editions/reservations cost study
 │   ├── monitoring/                 ← alert policies, dashboards
 │   ├── dr/                          ← disaster-recovery runbook
 │   └── cost/                        ← Editions/reservations study
-└── tests/
+└── tests/                            ← unit, data-quality/contract, and integration tests
     ├── unit/                        ← pipeline logic unit tests
     ├── data/                         ← data-quality/contract tests
     └── integration/                  ← end-to-end emulator-backed tests
@@ -487,10 +487,15 @@ deepan-mehta-analytics.
 
 **Deepan Mehta**
 
-- Data Analytics → Data Engineering → AI/ML Engineering
-- Focused on building end-to-end data and ML systems combining analytics,
-  automation, and deployment
-- Experience in ETL pipelines, predictive modelling, and analytical
-  databases
+- **Data Analytics → Data Engineering → AI/ML Engineering** — GridPulse is
+  the current focus: a GCP-native data platform built to cover the Google
+  Cloud Professional Data Engineer exam guide v4.2 end-to-end with runnable
+  artifacts, not notes.
+- **Prior background** in ETL pipelines, predictive modelling, and
+  analytical databases — the analytics grounding this platform's warehouse
+  and marts design builds on.
+- Other portfolio work spans applied ML systems and end-to-end data
+  pipelines; see the repos linked below.
 
 🔗 GitHub: [deepan-mehta-analytics](https://github.com/deepan-mehta-analytics)
+🔗 Other portfolio repos: [sales-data-pipeline](https://github.com/deepan-mehta-analytics/sales-data-pipeline) · [bike-demand-ml-system](https://github.com/deepan-mehta-analytics/bike-demand-ml-system)
