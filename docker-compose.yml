@@ -1,0 +1,107 @@
+# ── GridPulse local emulator stack ──────────────────────────────
+# Every managed GCP service used by this repo has a free local twin here.
+# Real GCP is only touched via `make cloud-up`, gated on a budget alert.
+services:
+  # ── Messaging ──────────────────────────────────────────────────
+  pubsub-emulator:                        # local twin of Cloud Pub/Sub
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:emulators  # official GCP emulator image
+    command: gcloud beta emulators pubsub start --host-port=0.0.0.0:8085  # start Pub/Sub emulator on 8085
+    ports:
+      - "8085:8085"                       # expose emulator port to host
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085"]  # emulator responds on its own port
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Wide-column ────────────────────────────────────────────────
+  bigtable-emulator:                      # local twin of Cloud Bigtable
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:emulators
+    command: gcloud beta emulators bigtable start --host-port=0.0.0.0:8086  # start Bigtable emulator on 8086
+    ports:
+      - "8086:8086"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Global relational (comparison/ADR only, not wired to pipeline) ─
+  spanner-emulator:                       # local twin of Cloud Spanner
+    image: gcr.io/cloud-spanner-emulator/emulator  # official Spanner emulator image
+    ports:
+      - "9010:9010"                       # gRPC endpoint
+      - "9020:9020"                       # REST endpoint
+
+  # ── OLTP (synthetic fleet/asset data for CDC exercises) ──────────
+  postgres:                               # local twin of Cloud SQL
+    image: postgres:16                    # pinned major version
+    environment:
+      POSTGRES_USER: gridpulse            # non-default app user, not a real credential
+      POSTGRES_PASSWORD: gridpulse_local   # local-only dev password, never used in cloud
+      POSTGRES_DB: gridpulse_ops           # synthetic operational schema database
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gridpulse"]  # wait for Postgres to accept connections
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── CDC ───────────────────────────────────────────────────────
+  debezium:                               # local twin of Datastream
+    image: debezium/connect:2.7           # Debezium Kafka Connect image
+    depends_on:
+      postgres:
+        condition: service_healthy         # wait for Postgres before starting CDC
+    ports:
+      - "8083:8083"                       # Kafka Connect REST API
+    environment:
+      BOOTSTRAP_SERVERS: "kafka:9092"      # placeholder broker, wired in Phase 1
+      GROUP_ID: "gridpulse-cdc"
+      CONFIG_STORAGE_TOPIC: "gridpulse_connect_configs"
+      OFFSET_STORAGE_TOPIC: "gridpulse_connect_offsets"
+
+  # ── Object store ──────────────────────────────────────────────
+  minio:                                  # local twin of Google Cloud Storage
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"  # start MinIO with web console
+    environment:
+      MINIO_ROOT_USER: gridpulse           # local-only credential, never real GCS
+      MINIO_ROOT_PASSWORD: gridpulse_local
+    ports:
+      - "9000:9000"                       # S3-compatible API
+      - "9001:9001"                       # web console
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Batch/Spark ───────────────────────────────────────────────
+  spark:                                  # local twin of Dataproc Serverless
+    image: bitnami/spark:3.5              # pinned Spark image
+    environment:
+      SPARK_MODE: master                  # run as a standalone Spark master
+    ports:
+      - "7077:7077"                       # Spark master port
+      - "8080:8080"                       # Spark web UI
+
+  # ── Orchestration ─────────────────────────────────────────────
+  airflow:                                # local twin of Cloud Composer
+    image: apache/airflow:2.10.4          # pinned Airflow version
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor  # single-node executor, fine for local dev
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://gridpulse:gridpulse_local@postgres/gridpulse_ops"  # reuse the local Postgres for Airflow metadata
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8081:8080"                       # Airflow webserver (8080 already used by Spark UI)
+    volumes:
+      - ./orchestrate/dags:/opt/airflow/dags  # mount DAGs from the repo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
