@@ -251,3 +251,4 @@ Thumbs.db
 # Local agent-workflow files — kept locally for development, not published
 /CLAUDE.md
 /workflow_status.md
+/workflow_status_archive.md
