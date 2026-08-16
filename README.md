@@ -49,7 +49,7 @@ bill.
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/features/actions)
 [![Google PDE v4.2 Aligned](https://img.shields.io/badge/Google_PDE-v4.2_Aligned-4285F4?style=for-the-badge&logo=googlecloud)](https://cloud.google.com/certification/data-engineer)
-[![Status](https://img.shields.io/badge/Status-Phase_0-yellow?style=for-the-badge)](#-known-limitations--roadmap)
+[![Status](https://img.shields.io/badge/Status-Phase_1_In_Progress-yellow?style=for-the-badge)](#-known-limitations--roadmap)
 
 ---
 
@@ -304,12 +304,14 @@ gridpulse-gcp/
 ```
 
 Every directory gets its own `README.md` stating its purpose and which exam
-objectives it serves. Empty directories carry a `.gitkeep`. **Phase 0 status:
-the directory scaffolding, per-directory READMEs, config (Terraform
-skeleton, docker-compose, Makefile, CI), and docs shown in the tree above
-all exist and are tracked — but no pipeline code has been written yet.**
-The tree is the target shape now filled in structurally; the logic inside
-it is what later phases add. See
+objectives it serves. Empty directories carry a `.gitkeep`. **Phase 0
+shipped the directory scaffolding, per-directory READMEs, and config
+(Terraform skeleton, docker-compose, Makefile, CI) shown in the tree above.
+Phase 1 is in progress: the Avro bronze contract, Pub/Sub topic/schema/DLQ
+setup, and the Elexon Insights BMRS REST client are built and tested
+(`ingest/contracts/`, `ingest/collectors/bmrs/`) — normalization, the
+collector's publish/DLQ entrypoint, the Beam windowing pipeline, and the
+replay DAG are still to come.** See
 [Known Limitations & Roadmap](#-known-limitations--roadmap).
 
 ---
@@ -344,11 +346,12 @@ it is what later phases add. See
 
 ## ▶️ How to Run
 
-**Phase 0 has no runnable pipeline yet.** `make up` is implemented today —
-it runs `docker compose up -d` and brings up real local emulator
-containers. `make seed` and `make pipeline` are still Phase 1 stubs — this
-section documents the target interface so it's visible from day one, not
-retrofitted later.
+**The end-to-end pipeline isn't runnable yet — Phase 1 is in progress.**
+`make up` is implemented today — it runs `docker compose up -d` and brings
+up real local emulator containers. `make seed` and `make pipeline` are
+still stubs until the collector's publish entrypoint and the Beam pipeline
+land (Phase 1 tasks not yet complete) — this section documents the target
+interface so it's visible from day one, not retrofitted later.
 
 > **Caveat:** `make up` starts all 8 emulator containers, but `airflow`
 > and `debezium` won't reach a fully healthy/functional state until
@@ -398,16 +401,22 @@ make cloud-down
 
 ## 🧪 Tests
 
-**Phase 0 — no tests exist yet; this section documents the interface tests
-will be added against.** Tracked in [Roadmap](#-known-limitations--roadmap).
+**Phase 1 tests exist and pass for the ingestion layer built so far** — 9
+tests across contract, integration, and unit suites (Avro bronze schema
+validation, Pub/Sub topic/schema/DLQ setup against the real emulator, and
+the BMRS REST client's retry/backoff behavior), runnable directly via
+`pytest`. The `make test-*` targets below are still stub `echo` commands —
+wiring them to the real `pytest` invocations is a later Phase 1 task
+(`make test-unit`/`test-contract`/`test-integration` today just print a
+placeholder line).
 
-| Target | Will cover |
-|---|---|
-| `make test-unit` | Pipeline transform logic in isolation (windowing, MERGE keys, masking rules) |
-| `make test-data` | Data-quality assertions — schema, null thresholds, referential checks |
-| `make test-contract` | Bronze ingestion contract compliance across all collectors |
-| `make test-integration` | End-to-end runs against the local emulator stack |
-| `make test-agents` | Golden-question CI eval set — SQL correctness, retrieval precision, out-of-scope refusal |
+| Target | Runnable today via | Will cover |
+|---|---|---|
+| `pytest tests/contract -v` | direct pytest (3 tests passing) | Bronze Avro schema validation |
+| `pytest tests/unit -v` | direct pytest (4 tests passing) | BMRS client retry/backoff logic; more lands as later tasks complete |
+| `pytest tests/integration -v` | direct pytest, emulator required (2 tests passing) | Pub/Sub topic/schema/DLQ setup against the real emulator; more lands as later tasks complete |
+| `make test-data` | not yet — stub | Data-quality assertions — schema, null thresholds, referential checks |
+| `make test-agents` | not yet — stub | Golden-question CI eval set — SQL correctness, retrieval precision, out-of-scope refusal |
 
 ---
 
@@ -435,19 +444,22 @@ No numbers are reported until they're real. See Roadmap below.
   end-to-end locally.
 - **ENTSO-E token not yet requested** (registration has a ~3 business-day
   lead time) — EU sources are out of scope until it lands.
-- **No pipeline code exists yet** — Phase 0 shipped the directory
-  scaffolding, config (Terraform skeleton, docker-compose, Makefile, CI),
-  and docs listed in the [Repository Structure](#-repository-structure)
-  above; the pipeline logic those directories are meant to hold is what
-  later phases add.
+- **Phase 1 pipeline code is partial** — the Avro bronze contract, Pub/Sub
+  topic/schema/DLQ setup, and the BMRS REST client are built and tested;
+  normalization, the collector's publish/DLQ entrypoint, the Beam
+  windowing pipeline, and the replay DAG are not yet written. `make seed`
+  and `make pipeline` stay stubs until those land.
 - **Conversational Analytics API is preview-era** — its pricing must be
   re-verified before any demo window enables it.
 
 ### Roadmap
 
 - `Phase 0` — Scaffolding (this README, ADRs, exam-guide map, Terraform
-  skeleton, CI skeleton, docker-compose skeleton) — **current phase**
-- `Phase 1` — Stream ingest → bronze/silver on local emulators
+  skeleton, CI skeleton, docker-compose skeleton) — done
+- `Phase 1` — Stream ingest → bronze on local emulators — **current phase,
+  in progress** (Avro bronze contract, Pub/Sub topic/schema/DLQ setup, and
+  the BMRS REST client are built and tested; normalization, the collector
+  entrypoint, the Beam pipeline, and the replay DAG remain)
 - `Phase 2` — Bitemporal restatement engine + reconciliation test suite
 - `Phase 3` — Batch backfill, BigLake/Iceberg, SCD2 dims, gold marts
 - `Phase 4` — Governance: Dataplex, DLP, policy tags, Analytics Hub
