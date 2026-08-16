@@ -3,8 +3,10 @@
 Ecosystem snapshot for this repo. Updated after every meaningful session.
 
 ## Current phase
-Phase 0 — Scaffolding (README, directory tree, exam-guide map, data-sources
-doc, docker-compose/Makefile, Terraform skeleton, CI, ADRs, this file).
+Phase 0 — Scaffolding is done (see Phase status table below); ready to
+start Phase 1 — Stream ingest → bronze/silver (local). Phase 0 delivered
+README, directory tree, exam-guide map, data-sources doc, docker-compose/
+Makefile, Terraform skeleton, CI, ADRs, and this file.
 
 ## Phase status
 
@@ -20,7 +22,7 @@ doc, docker-compose/Makefile, Terraform skeleton, CI, ADRs, this file).
 | 7 — Cloud demo window | ⏳ Pending | |
 
 ## Last commit
-6f991b2 docs: add ADRs for bitemporal model, Bigtable comparison, and masking
+7645889 fix: anchor gitignore data/ pattern to repo root
 
 ## Metrics
 No results yet — Phase 0 has no runnable pipeline. See README Results

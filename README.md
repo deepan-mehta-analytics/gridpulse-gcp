@@ -233,7 +233,8 @@ Key decisions this architecture rests on:
    sits over market notices for retrieval.
 6. **Agents** — Three tiers (analyst, ops, observability) read from and
    write telemetry back into the same medallion pipeline the rest of the
-   platform runs on; see §5 of the [Phase 0 kickoff spec](docs/superpowers/specs/2026-08-16-gridpulse-phase0-kickoff.md).
+   platform runs on; the design rationale lives in internal planning
+   notes, not included in this repo.
 
 ---
 
@@ -299,8 +300,11 @@ gridpulse-gcp/
 
 Every directory gets its own `README.md` stating its purpose and which exam
 objectives it serves. Empty directories carry a `.gitkeep`. **Phase 0 status:
-only `docs/`, `LICENSE`, and this `README.md` currently exist in the tree
-above** — the rest is the target shape later phases fill in; see
+the directory scaffolding, per-directory READMEs, config (Terraform
+skeleton, docker-compose, Makefile, CI), and docs shown in the tree above
+all exist and are tracked — but no pipeline code has been written yet.**
+The tree is the target shape now filled in structurally; the logic inside
+it is what later phases add. See
 [Known Limitations & Roadmap](#-known-limitations--roadmap).
 
 ---
@@ -335,9 +339,19 @@ above** — the rest is the target shape later phases fill in; see
 
 ## ▶️ How to Run
 
-**Phase 0 has no runnable pipeline yet.** `make up`, `make seed`, and
-`make pipeline` below land in Phase 1 — this section documents the target
-interface so it's visible from day one, not retrofitted later.
+**Phase 0 has no runnable pipeline yet.** `make up` is implemented today —
+it runs `docker compose up -d` and brings up real local emulator
+containers. `make seed` and `make pipeline` are still Phase 1 stubs — this
+section documents the target interface so it's visible from day one, not
+retrofitted later.
+
+> **Caveat:** `make up` starts all 8 emulator containers, but `airflow`
+> and `debezium` won't reach a fully healthy/functional state until
+> Phase 1 wiring lands — Airflow needs its DB migration + admin user +
+> webserver entrypoint command, and Debezium's Kafka broker doesn't exist
+> in this compose file yet (its `BOOTSTRAP_SERVERS` is a placeholder). The
+> other 6 services (Pub/Sub, Bigtable, Spanner, Postgres, MinIO, Spark)
+> come up clean.
 
 ### 📌 Local (target — no GCP account needed)
 
@@ -416,9 +430,11 @@ No numbers are reported until they're real. See Roadmap below.
   end-to-end locally.
 - **ENTSO-E token not yet requested** (registration has a ~3 business-day
   lead time) — EU sources are out of scope until it lands.
-- **No pipeline code exists yet** — Phase 0 is scaffolding only; every
-  directory in the [Repository Structure](#-repository-structure) above
-  the `docs/` level is a target, not a built artifact.
+- **No pipeline code exists yet** — Phase 0 shipped the directory
+  scaffolding, config (Terraform skeleton, docker-compose, Makefile, CI),
+  and docs listed in the [Repository Structure](#-repository-structure)
+  above; the pipeline logic those directories are meant to hold is what
+  later phases add.
 - **Conversational Analytics API is preview-era** — its pricing must be
   re-verified before any demo window enables it.
 
