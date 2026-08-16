@@ -247,3 +247,7 @@ terraform.tfvars
 .DS_Store
 Thumbs.db
 *.log
+
+# Local agent-workflow files — kept locally for development, not published
+/CLAUDE.md
+/workflow_status.md

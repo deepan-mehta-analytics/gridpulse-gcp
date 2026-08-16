@@ -244,11 +244,9 @@ Key decisions this architecture rests on:
 gridpulse-gcp/
 ├── README.md                  ← you are here
 ├── PROJECT-STATUS.md          ← ecosystem-wide status snapshot
-├── workflow_status.md         ← in-repo placeholder; authoritative copy in auto-memory
 ├── Makefile                   ← up/down/seed/pipeline/test-*/cloud-* targets
 ├── docker-compose.yml         ← local emulator stack (Pub/Sub, Bigtable, Postgres, MinIO, Spark, Airflow…)
 ├── .env.example                ← placeholder config, no real identifiers
-├── CLAUDE.md                  ← project-level agent guardrails, extends the global config
 ├── docs/                       ← exam-guide map, ADRs, data-source + cost docs
 │   ├── exam-guide-map.md      ← every v4.2 sub-objective → file → status
 │   ├── exam-guide-delta.md    ← tracks changes to the published exam guide
