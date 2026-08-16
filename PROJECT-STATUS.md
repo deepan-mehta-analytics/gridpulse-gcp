@@ -22,7 +22,7 @@ Makefile, Terraform skeleton, CI, ADRs, and this file.
 | 7 — Cloud demo window | ⏳ Pending | |
 
 ## Last commit
-7645889 fix: anchor gitignore data/ pattern to repo root
+f5198b1 chore: gitignore workflow_status_archive.md preemptively
 
 ## Metrics
 No results yet — Phase 0 has no runnable pipeline. See README Results
