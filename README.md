@@ -2,22 +2,29 @@
 
 ## ⚡ Quick Summary
 
-GB electricity settlement periods don't settle once — they get republished
-through reconciliation runs for up to four months after the event, and each
-run can move the imbalance price. Most portfolio data projects sidestep this
-entirely: pull a CSV snapshot, load it once, done. GridPulse treats the
-republishing itself as the interesting engineering problem. `event_time`,
-`published_at`, and `settlement_run` are modeled as separate first-class
-dimensions all the way from ingestion to the gold layer — nothing is
-overwritten, current-state is a view over history, and any past belief state
-is reconstructable with an as-of query.
+In Great Britain's electricity market, a settlement price isn't final the
+day it's published — it gets **re-published through reconciliation runs for
+up to four months afterward**, and each run can move the price. Most
+portfolio data projects sidestep this: pull a CSV, load it once, done.
+**GridPulse treats the re-publishing itself as the engineering problem.**
+Every settlement figure keeps three timestamps as separate, first-class
+fields, tracked all the way from ingestion to the gold layer:
 
-The second design constraint is the exam-alignment angle: every objective in
-the Google Cloud Professional Data Engineer exam guide v4.2 gets a runnable
-artifact somewhere in this repo, not a bullet point in a notes file. The
-platform runs entirely on free-tier and local emulators by default, with
-real GCP reserved for short, budget-capped demo windows — so the whole thing
-is buildable and rebuildable without a standing cloud bill.
+- **`event_time`** — when the settlement period actually occurred
+- **`published_at`** — when this specific version of the number was published
+- **`settlement_run`** — which reconciliation pass produced it
+
+Nothing is ever overwritten. **"Current state" is just a view over the full
+history**, and any past belief about the numbers can be reconstructed with a
+simple as-of query.
+
+The second design constraint is **exam alignment**: every objective in the
+Google Cloud Professional Data Engineer exam guide v4.2 has a runnable
+artifact somewhere in this repo — not a bullet point in a notes file. The
+platform runs entirely on **free-tier services and local emulators by
+default**, with real GCP reserved for short, budget-capped demo windows —
+so the whole thing is buildable and rebuildable without a standing cloud
+bill.
 
 > *A GCP data platform that treats "the numbers changed after publication"
 > as the interesting problem, not an edge case to paper over.*
