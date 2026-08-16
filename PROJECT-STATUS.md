@@ -10,7 +10,7 @@ doc, docker-compose/Makefile, Terraform skeleton, CI, ADRs, this file).
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 — Scaffolding | 🔄 In Progress | this session |
+| 0 — Scaffolding | ✅ Done | this session |
 | 1 — Stream ingest → bronze/silver (local) | ⏳ Pending | |
 | 2 — Bitemporal restatement engine + tests | ⏳ Pending | |
 | 3 — Batch backfill, BigLake/Iceberg, gold marts | ⏳ Pending | |
