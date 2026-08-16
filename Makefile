@@ -33,7 +33,7 @@ test-agents:                               # run the agent golden-question eval 
 cloud-up:                                  # provision the real-GCP demo window
 	@if [ -z "$$GCP_BUDGET_ALERT_CONFIGURED" ]; then \
 		echo "ERROR: cloud-up refuses to run without a configured budget alert."; \
-		echo "Set GCP_BUDGET_ALERT_CONFIGURED=1 in .env only after confirming"; \
+		echo "Run: export GCP_BUDGET_ALERT_CONFIGURED=1 — only after confirming"; \
 		echo "a real budget alert exists on the target project."; \
 		exit 1; \
 	fi

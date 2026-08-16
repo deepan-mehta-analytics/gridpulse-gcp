@@ -36,10 +36,11 @@ services:
   # ── OLTP (synthetic fleet/asset data for CDC exercises) ──────────
   postgres:                               # local twin of Cloud SQL
     image: postgres:16                    # pinned major version
+    command: ["postgres", "-c", "wal_level=logical"]  # Debezium's Postgres connector requires logical WAL for CDC (default is replica); wired in Phase 1
     environment:
       POSTGRES_USER: gridpulse            # non-default app user, not a real credential
-      POSTGRES_PASSWORD: gridpulse_local_pg  # local-only dev password, distinct per service, never used in cloud
-      POSTGRES_DB: gridpulse_ops           # synthetic operational schema database
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gridpulse_local_pg}  # read from .env, falls back to the same local-only dev default
+      POSTGRES_DB: gridpulse_ops           # synthetic operational schema database — the one Debezium CDC-watches
     ports:
       - "127.0.0.1:5432:5432"             # loopback-only: never expose the local DB to the LAN
     healthcheck:
@@ -54,8 +55,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy         # wait for Postgres before starting CDC
+    # Kafka Connect's REST API (8083) has no authentication of its own and accepts
+    # arbitrary connector configs over plain HTTP — a known RCE/config-disclosure
+    # surface if ever exposed beyond loopback. Loopback-only binding below is
+    # load-bearing, not just convention: do not widen this to 0.0.0.0.
     ports:
-      - "127.0.0.1:8083:8083"             # Kafka Connect REST API, loopback-only
+      - "127.0.0.1:8083:8083"             # Kafka Connect REST API, loopback-only (no built-in auth)
     environment:
       BOOTSTRAP_SERVERS: "kafka:9092"      # placeholder broker, wired in Phase 1
       GROUP_ID: "gridpulse-cdc"
@@ -64,14 +69,17 @@ services:
 
   # ── Object store ──────────────────────────────────────────────
   minio:                                  # local twin of Google Cloud Storage
-    image: minio/minio:RELEASE.2024-01-16T16-07-38Z  # pinned release, matches this file's pinning convention
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z  # pinned release, current as of this fix — supersedes 2024-01-16 tag which predates the CVE-2024-24747 privilege-escalation fix
     command: server /data --console-address ":9001"  # start MinIO with web console
     environment:
       MINIO_ROOT_USER: gridpulse           # local-only credential, never real GCS
-      MINIO_ROOT_PASSWORD: gridpulse_local_minio  # local-only dev password, distinct per service, never used in cloud
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-gridpulse_local_minio}  # read from .env, falls back to the same local-only dev default
+    # The console (9001) is backed by the root credentials above, but loopback-only
+    # binding is still deliberate, not incidental: it's the only thing standing
+    # between the console and anyone else on the same network segment.
     ports:
       - "127.0.0.1:9000:9000"             # S3-compatible API, loopback-only
-      - "127.0.0.1:9001:9001"             # web console, loopback-only
+      - "127.0.0.1:9001:9001"             # web console, loopback-only (root-credential-backed, binding is deliberate)
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 10s
@@ -94,7 +102,17 @@ services:
     image: apache/airflow:2.10.4          # pinned Airflow version
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor  # single-node executor, fine for local dev
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://gridpulse:gridpulse_local_pg@postgres/gridpulse_ops"  # reuse the local Postgres for Airflow metadata
+      # Deliberately a DIFFERENT database (gridpulse_airflow) from gridpulse_ops:
+      # gridpulse_ops is the schema Debezium CDC-watches (synthetic fleet/asset
+      # data, see docs/data-sources.md + ADR 0003). Pointing Airflow's own
+      # metadata store at that same DB would mean Debezium captures Airflow's
+      # internal tables (dag_run, task_instance, xcom, ...) as CDC events,
+      # polluting the exact exercise gridpulse_ops exists for. The standard
+      # postgres image only auto-creates the DB named in POSTGRES_DB above
+      # (gridpulse_ops), so gridpulse_airflow does not exist yet — creating it
+      # is Phase 1 Postgres init-script work, alongside the rest of Airflow's
+      # webserver wiring (DB migration, admin user, entrypoint command).
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://gridpulse:${POSTGRES_PASSWORD:-gridpulse_local_pg}@postgres/gridpulse_airflow"
     depends_on:
       postgres:
         condition: service_healthy

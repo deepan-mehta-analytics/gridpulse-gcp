@@ -208,10 +208,10 @@ __marimo__/
 
 # Data files
 /data/
-raw/
-input/
-output/
-logs/
+/raw/
+/input/
+/output/
+/logs/
 .cache/
 *.csv
 *.parquet

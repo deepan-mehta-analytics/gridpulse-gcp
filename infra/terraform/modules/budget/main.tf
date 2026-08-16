@@ -9,6 +9,9 @@ resource "google_billing_budget" "gridpulse" { # the actual budget resource
 
   amount {
     specified_amount { # fixed GBP ceiling, not percentage-of-last-period
+      # Must match the target billing account's own currency or `apply` fails
+      # with a non-obvious error — verify the real billing account's currency
+      # before this is ever applied (Phase 7), don't assume GBP.
       currency_code = "GBP"
       units         = tostring(var.monthly_budget_gbp)
     }
