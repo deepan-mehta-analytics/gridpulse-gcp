@@ -1,9 +1,14 @@
-# ── GridPulse CI — runs on every pull request against main ─────────
+# ── GridPulse CI — runs on every push and pull request against main ─
 name: CI                                  # workflow display name in GitHub Actions UI
 
 on:
-  pull_request:                           # run on every PR
+  pull_request:                           # run on every PR (kept for if/when a branching workflow is ever adopted)
     branches: [main]                      # only against the main branch
+  push:                                   # this repo's actual workflow is direct-to-main, no PRs — push is what actually fires today
+    branches: [main]                      # only for pushes landing on main
+
+permissions:
+  contents: read                          # default GITHUB_TOKEN scope: read-only, this workflow never needs to write
 
 jobs:
   lint-and-validate:                      # single job for Phase 0's lightweight check set
