@@ -1,0 +1,33 @@
+{
+  "type": "record",
+  "name": "BmrsSettlementSystemPriceBronze",
+  "namespace": "gridpulse.bronze.bmrs",
+  "doc": "Bronze-layer record for one Elexon Insights DISEBSP settlement system price observation. Versioned _v1 by filename — a breaking change ships as _v2 rather than mutating this contract. Prices stored as Avro double (IEEE 754 float64, ~15-17 significant digits); the live API returns 18-decimal-place values, so this trades a small amount of tail precision for pipeline simplicity in Phase 1.",
+  "fields": [
+    {"name": "schema_version", "type": "int", "default": 1},
+    {"name": "source_dataset", "type": "string"},
+    {"name": "settlement_date", "type": "string", "doc": "yyyy-MM-dd"},
+    {"name": "settlement_period", "type": "int"},
+    {"name": "start_time", "type": "string", "doc": "ISO-8601 UTC — the Beam pipeline's event time"},
+    {"name": "created_date_time", "type": "string", "doc": "ISO-8601 UTC — Elexon's own calculation-run timestamp, used as this record's version identifier"},
+    {"name": "system_sell_price", "type": "double"},
+    {"name": "system_buy_price", "type": "double"},
+    {"name": "bsad_defaulted", "type": "boolean"},
+    {"name": "price_derivation_code", "type": "string"},
+    {"name": "reserve_scarcity_price", "type": "double"},
+    {"name": "net_imbalance_volume", "type": "double"},
+    {"name": "sell_price_adjustment", "type": "double"},
+    {"name": "buy_price_adjustment", "type": "double"},
+    {"name": "replacement_price", "type": "double"},
+    {"name": "replacement_price_reference_volume", "type": "double"},
+    {"name": "total_accepted_offer_volume", "type": "double"},
+    {"name": "total_accepted_bid_volume", "type": "double"},
+    {"name": "total_adjustment_sell_volume", "type": ["null", "double"], "default": null},
+    {"name": "total_adjustment_buy_volume", "type": "double"},
+    {"name": "total_system_tagged_accepted_offer_volume", "type": "double"},
+    {"name": "total_system_tagged_accepted_bid_volume", "type": "double"},
+    {"name": "total_system_tagged_adjustment_sell_volume", "type": ["null", "double"], "default": null},
+    {"name": "total_system_tagged_adjustment_buy_volume", "type": "double"},
+    {"name": "ingested_at", "type": "string", "doc": "ISO-8601 UTC — when this collector fetched the record, distinct from Elexon's created_date_time"}
+  ]
+}

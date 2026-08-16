@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]  # Specify minimum setuptools version for PEP 517 builds
+build-backend = "setuptools.build_meta"  # Use setuptools as the build backend
+
+[project]
+name = "gridpulse"  # Package name for this data pipeline project
+version = "0.1.0"  # Semantic version — incremented per release
+description = "GridPulse pipeline code — not distributed, pyproject.toml exists for tooling config and editable local imports"  # Brief project description
+requires-python = ">=3.11"  # Minimum Python version for all runtime code
+
+dependencies = [
+    "requests>=2.32",  # HTTP client library for calling Elexon Insights BMRS API
+    "fastavro>=1.9",  # Avro serialization library for schema validation and serde
+    "google-cloud-pubsub>=2.23",  # GCP Pub/Sub client for publishing ingested records
+    "apache-beam[aws]>=2.58",  # Apache Beam for distributed batch/streaming ETL
+    "boto3>=1.35",  # AWS SDK (required by Beam AWS connector)
+    "python-dotenv>=1.0",  # Load environment variables from .env for local dev
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",  # Testing framework for unit and integration tests
+    "pytest-mock>=3.14",  # Mock fixtures for pytest (used in Phase 2+ tests)
+    "requests-mock>=1.12",  # Mock adapter for requests library HTTP calls
+    "ruff>=0.6",  # Fast Python linter and formatter
+]
+
+[tool.setuptools.packages.find]
+include = ["ingest*", "transform*", "orchestrate*"]  # Discover these package namespaces during install
+
+[tool.pytest.ini_options]
+pythonpath = ["."]  # Add repo root to PYTHONPATH so imports work without editable install
+testpaths = ["tests"]  # Pytest searches for tests in tests/ directory
+
+[tool.ruff]
+line-length = 100  # Target line length for formatting
+target-version = "py311"  # Target Python version for syntax/feature checks
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]  # Error, Fatal, Import sorting, Upgrade (autopep8 compat, undefined names, imports, pyupgrade)
