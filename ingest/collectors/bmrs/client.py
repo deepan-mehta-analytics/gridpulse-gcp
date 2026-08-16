@@ -54,7 +54,7 @@ def fetch_system_prices(
             response = session.get(url, timeout=10)
         except requests.RequestException as exc:
             # Catch transient connection errors (timeout, connection refused, etc.)
-            last_error = exc
+            last_error = BmrsApiError(None, str(exc))  # Wrap raw exception as BmrsApiError for consistent exception contract
             # Wait before retrying; backoff = base * attempt (1s, 2s, 3s for 1.0 base)
             time.sleep(backoff_seconds * attempt)
             # Continue to next retry iteration
