@@ -35,3 +35,14 @@ def test_normalize_malformed_response_raises():
     # Test: verify NormalizationError raised when required field (systemSellPrice) is missing
     with pytest.raises(NormalizationError):  # Expect NormalizationError to be raised
         normalize_records(_load_fixture("bmrs_response_malformed.json"))  # Call with fixture missing systemSellPrice
+
+
+def test_normalize_response_with_nullable_fields_as_null_succeeds():
+    # Test: verify the four newly-nullable fields normalize to None without raising, matching real API behavior
+    records = normalize_records(_load_fixture("bmrs_response_null_optional_fields.json"))  # Call normalize_records with all-nulls fixture
+    assert len(records) == 1  # Verify exactly one record returned, no exception raised
+    record = records[0]  # Extract the single normalized record
+    assert record["replacement_price"] is None  # Verify nullable field preserved as None
+    assert record["replacement_price_reference_volume"] is None  # Verify nullable field preserved as None
+    assert record["total_adjustment_buy_volume"] is None  # Verify nullable field preserved as None
+    assert record["total_system_tagged_adjustment_buy_volume"] is None  # Verify nullable field preserved as None

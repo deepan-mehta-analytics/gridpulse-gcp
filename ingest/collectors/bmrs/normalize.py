@@ -58,16 +58,16 @@ def normalize_records(raw_response: dict) -> list[dict]:
             "net_imbalance_volume": entry["netImbalanceVolume"],  # Net system imbalance volume in MW
             "sell_price_adjustment": entry["sellPriceAdjustment"],  # Adjustment to sell price in GBP/MWh
             "buy_price_adjustment": entry["buyPriceAdjustment"],  # Adjustment to buy price in GBP/MWh
-            "replacement_price": entry["replacementPrice"],  # Replacement price for imbalance in GBP/MWh
-            "replacement_price_reference_volume": entry["replacementPriceReferenceVolume"],  # Reference volume for replacement price
+            "replacement_price": entry.get("replacementPrice"),  # Replacement price for imbalance in GBP/MWh (nullable field)
+            "replacement_price_reference_volume": entry.get("replacementPriceReferenceVolume"),  # Reference volume for replacement price (nullable field)
             "total_accepted_offer_volume": entry["totalAcceptedOfferVolume"],  # Total volume of accepted offers in MW
             "total_accepted_bid_volume": entry["totalAcceptedBidVolume"],  # Total volume of accepted bids in MW
             "total_adjustment_sell_volume": entry.get("totalAdjustmentSellVolume"),  # Total adjustment sell volume (nullable field)
-            "total_adjustment_buy_volume": entry["totalAdjustmentBuyVolume"],  # Total adjustment buy volume in MW
+            "total_adjustment_buy_volume": entry.get("totalAdjustmentBuyVolume"),  # Total adjustment buy volume in MW (nullable field)
             "total_system_tagged_accepted_offer_volume": entry["totalSystemTaggedAcceptedOfferVolume"],  # System-tagged accepted offers
             "total_system_tagged_accepted_bid_volume": entry["totalSystemTaggedAcceptedBidVolume"],  # System-tagged accepted bids
             "total_system_tagged_adjustment_sell_volume": entry.get("totalSystemTaggedAdjustmentSellVolume"),  # System-tagged adjust sell (nullable)
-            "total_system_tagged_adjustment_buy_volume": entry["totalSystemTaggedAdjustmentBuyVolume"],  # System-tagged adjustment buy
+            "total_system_tagged_adjustment_buy_volume": entry.get("totalSystemTaggedAdjustmentBuyVolume"),  # System-tagged adjustment buy (nullable field)
             "ingested_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),  # Current UTC timestamp when record was ingested
         })
     # Return list of normalized records; may be empty if data array was empty

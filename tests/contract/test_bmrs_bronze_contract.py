@@ -57,3 +57,12 @@ def test_record_with_wrong_type_fails_schema(schema):  # Test that assigning wro
     record = _normalized_valid_record()  # Start with a valid record
     record["settlement_period"] = "not-an-int"  # Assign string to field that expects int type
     assert not fastavro.validation.validate(record, schema, raise_errors=False)  # Assert validation fails for type mismatch
+
+
+def test_record_with_null_in_newly_nullable_fields_matches_schema(schema):  # Test that the four newly-nullable fields accept None per real API behavior
+    record = _normalized_valid_record()  # Start with a valid record
+    record["replacement_price"] = None  # Set to None: real API returns null when no replacement price applied
+    record["replacement_price_reference_volume"] = None  # Set to None: paired field with replacement_price
+    record["total_adjustment_buy_volume"] = None  # Set to None: real API legitimately omits this some periods
+    record["total_system_tagged_adjustment_buy_volume"] = None  # Set to None: real API legitimately omits this some periods
+    assert fastavro.validation.validate(record, schema, raise_errors=True)  # Assert record still passes schema validation with nulls

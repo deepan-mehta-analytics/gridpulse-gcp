@@ -18,16 +18,16 @@
     {"name": "net_imbalance_volume", "type": "double"},
     {"name": "sell_price_adjustment", "type": "double"},
     {"name": "buy_price_adjustment", "type": "double"},
-    {"name": "replacement_price", "type": "double"},
-    {"name": "replacement_price_reference_volume", "type": "double"},
+    {"name": "replacement_price", "type": ["null", "double"], "default": null},
+    {"name": "replacement_price_reference_volume", "type": ["null", "double"], "default": null},
     {"name": "total_accepted_offer_volume", "type": "double"},
     {"name": "total_accepted_bid_volume", "type": "double"},
     {"name": "total_adjustment_sell_volume", "type": ["null", "double"], "default": null},
-    {"name": "total_adjustment_buy_volume", "type": "double"},
+    {"name": "total_adjustment_buy_volume", "type": ["null", "double"], "default": null},
     {"name": "total_system_tagged_accepted_offer_volume", "type": "double"},
     {"name": "total_system_tagged_accepted_bid_volume", "type": "double"},
     {"name": "total_system_tagged_adjustment_sell_volume", "type": ["null", "double"], "default": null},
-    {"name": "total_system_tagged_adjustment_buy_volume", "type": "double"},
+    {"name": "total_system_tagged_adjustment_buy_volume", "type": ["null", "double"], "default": null},
     {"name": "ingested_at", "type": "string", "doc": "ISO-8601 UTC — when this collector fetched the record, distinct from Elexon's created_date_time"}
   ]
 }
