@@ -1,0 +1,28 @@
+{
+  "metadata": {"datasets": ["DISEBSP"]},
+  "data": [
+    {
+      "settlementDate": "2026-08-10",
+      "settlementPeriod": 2,
+      "startTime": "2026-08-09T23:30:00Z",
+      "createdDateTime": "2026-08-10T23:44:25Z",
+      "systemBuyPrice": 97.711171205926262928,
+      "bsadDefaulted": false,
+      "priceDerivationCode": "N",
+      "reserveScarcityPrice": 0.0,
+      "netImbalanceVolume": -99.15314569444445,
+      "sellPriceAdjustment": 0.0,
+      "buyPriceAdjustment": 0.0,
+      "replacementPrice": 97.7595,
+      "replacementPriceReferenceVolume": 1.0,
+      "totalAcceptedOfferVolume": 593.2635209722222,
+      "totalAcceptedBidVolume": -809.8051783333333,
+      "totalAdjustmentSellVolume": 0.0,
+      "totalAdjustmentBuyVolume": 117.5,
+      "totalSystemTaggedAcceptedOfferVolume": 593.2635209722222,
+      "totalSystemTaggedAcceptedBidVolume": -808.8051783333333,
+      "totalSystemTaggedAdjustmentSellVolume": null,
+      "totalSystemTaggedAdjustmentBuyVolume": 117.5
+    }
+  ]
+}
