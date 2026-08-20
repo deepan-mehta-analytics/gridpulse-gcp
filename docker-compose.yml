@@ -14,6 +14,19 @@ services:
       timeout: 5s
       retries: 5
 
+  # ── Ingestion (Phase 1) ──────────────────────────────────────────
+  bmrs-collector:                         # local twin of the Cloud Run BMRS collector
+    build:
+      context: .
+      dockerfile: ingest/collectors/bmrs/Dockerfile
+    depends_on:
+      pubsub-emulator:
+        condition: service_healthy         # topics/schema get created on startup, needs the emulator up first
+    environment:
+      PUBSUB_EMULATOR_HOST: pubsub-emulator:8085  # route the client library at the emulator, not real GCP
+      GCP_PROJECT_ID: gridpulse-local
+    profiles: ["seed"]                    # one-shot job — only runs via `docker compose run`, never `up`
+
   # ── Wide-column ────────────────────────────────────────────────
   bigtable-emulator:                      # local twin of Cloud Bigtable
     image: gcr.io/google.com/cloudsdktool/cloud-sdk:emulators
@@ -62,7 +75,7 @@ services:
     ports:
       - "127.0.0.1:8083:8083"             # Kafka Connect REST API, loopback-only (no built-in auth)
     environment:
-      BOOTSTRAP_SERVERS: "kafka:9092"      # placeholder broker, wired in Phase 1
+      BOOTSTRAP_SERVERS: "kafka:9092"      # placeholder broker — wired when CDC becomes its own phase (deferred past Phase 1, see docs/superpowers/specs/2026-08-16-gridpulse-phase1-stream-ingest-design.md §3)
       GROUP_ID: "gridpulse-cdc"
       CONFIG_STORAGE_TOPIC: "gridpulse_connect_configs"
       OFFSET_STORAGE_TOPIC: "gridpulse_connect_offsets"
