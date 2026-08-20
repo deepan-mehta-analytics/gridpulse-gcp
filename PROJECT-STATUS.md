@@ -27,7 +27,7 @@ and doc corrections remain — see
 | 7 — Cloud demo window | ⏳ Pending | |
 
 ## Last commit
-33c3f66 fix: bootstrap local Airflow service (DB creation + standalone mode)
+ebc8424 docs: expand and beautify README Business Problem section
 
 ## Metrics
 No results yet — the pipeline isn't wired end-to-end via `make` (individual
