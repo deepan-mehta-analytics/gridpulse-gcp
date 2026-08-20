@@ -3,11 +3,14 @@
 Ecosystem snapshot for this repo. Updated after every meaningful session.
 
 ## Current phase
-Phase 1 — Stream ingest → bronze (local) is in progress: 3 of 11 planned
-tasks complete (Python scaffolding + Avro bronze contract, Pub/Sub topic/
-schema/DLQ setup, BMRS REST client). Normalization, the collector's
-publish/DLQ entrypoint, the Beam windowing pipeline, containerization,
-Makefile wiring, CI lint/test steps, and doc corrections remain — see
+Phase 1 — Stream ingest → bronze (local) is in progress: 8 of 11 planned
+tasks complete, plus 2 ad hoc fixes for real bugs surfaced by live
+testing (Python scaffolding + Avro bronze contract, Pub/Sub topic/schema/
+DLQ setup, BMRS REST client, response normalization, the collector's
+publish/DLQ entrypoint + containerization, the Beam windowing pipeline,
+the DLQ replay logic + Airflow DAG, a bronze-schema nullability fix, and
+an Airflow service bootstrap fix). Makefile wiring, CI lint/test steps,
+and doc corrections remain — see
 `docs/superpowers/plans/2026-08-16-gridpulse-phase1-stream-ingest.md`.
 
 ## Phase status
@@ -15,7 +18,7 @@ Makefile wiring, CI lint/test steps, and doc corrections remain — see
 | Phase | Status | Notes |
 |---|---|---|
 | 0 — Scaffolding | ✅ Done | 2026-08-16 |
-| 1 — Stream ingest → bronze (local) | 🔄 In Progress | 3/11 tasks — 2026-08-16 |
+| 1 — Stream ingest → bronze (local) | 🔄 In Progress | 8/11 tasks + 2 ad hoc fixes — 2026-08-20 |
 | 2 — Bitemporal restatement engine + tests | ⏳ Pending | |
 | 3 — Batch backfill, BigLake/Iceberg, gold marts | ⏳ Pending | |
 | 4 — Governance (Dataplex, DLP, policy tags) | ⏳ Pending | |
@@ -24,11 +27,12 @@ Makefile wiring, CI lint/test steps, and doc corrections remain — see
 | 7 — Cloud demo window | ⏳ Pending | |
 
 ## Last commit
-6c699cd docs: simplify and reformat README Quick Summary section
+33c3f66 fix: bootstrap local Airflow service (DB creation + standalone mode)
 
 ## Metrics
-No results yet — the pipeline isn't runnable end-to-end. See README Results
-section for the five metrics that will populate here.
+No results yet — the pipeline isn't wired end-to-end via `make` (individual
+components are built, tested, and verified against the live local stack).
+See README Results section for the five metrics that will populate here.
 
 ## Known gaps
 Dataplex and Datastream have no local emulator twin (cloud-only, evidenced

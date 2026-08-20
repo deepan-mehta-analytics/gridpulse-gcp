@@ -308,10 +308,13 @@ objectives it serves. Empty directories carry a `.gitkeep`. **Phase 0
 shipped the directory scaffolding, per-directory READMEs, and config
 (Terraform skeleton, docker-compose, Makefile, CI) shown in the tree above.
 Phase 1 is in progress: the Avro bronze contract, Pub/Sub topic/schema/DLQ
-setup, and the Elexon Insights BMRS REST client are built and tested
-(`ingest/contracts/`, `ingest/collectors/bmrs/`) — normalization, the
-collector's publish/DLQ entrypoint, the Beam windowing pipeline, and the
-replay DAG are still to come.** See
+setup, the Elexon Insights BMRS REST client, response normalization, the
+collector's publish/DLQ entrypoint (containerized and wired into
+docker-compose), the Beam windowing pipeline landing bronze to MinIO, and
+the DLQ replay DAG are all built and tested
+(`ingest/contracts/`, `ingest/collectors/bmrs/`, `transform/beam/`,
+`orchestrate/dags/`) — only Makefile wiring, CI lint/test steps, and doc
+corrections remain.** See
 [Known Limitations & Roadmap](#-known-limitations--roadmap).
 
 ---
@@ -346,19 +349,24 @@ replay DAG are still to come.** See
 
 ## ▶️ How to Run
 
-**The end-to-end pipeline isn't runnable yet — Phase 1 is in progress.**
-`make up` is implemented today — it runs `docker compose up -d` and brings
-up real local emulator containers. `make seed` and `make pipeline` are
-still stubs until the collector's publish entrypoint and the Beam pipeline
-land (Phase 1 tasks not yet complete) — this section documents the target
-interface so it's visible from day one, not retrofitted later.
+**The end-to-end pipeline code is built and tested, but not yet wired
+into `make` targets.** `make up` is implemented today — it runs
+`docker compose up -d` and brings up real local emulator containers,
+including a now-fully-bootstrapped Airflow. The collector
+(`docker compose run --rm bmrs-collector`), the Beam windowing pipeline
+(`python -m transform.beam.bmrs_windowing_pipeline ...`), and the DLQ
+replay DAG (triggerable via the Airflow UI or CLI) all run and have been
+verified end-to-end against the live local stack — `make seed` and
+`make pipeline` just haven't been pointed at them yet (Makefile wiring is
+the next Phase 1 task).
 
-> **Caveat:** `make up` starts all 8 emulator containers, but `airflow`
-> and `debezium` won't reach a fully healthy/functional state until
-> Phase 1 wiring lands — Airflow needs its DB migration + admin user +
-> webserver entrypoint command, and Debezium's Kafka broker doesn't exist
-> in this compose file yet (its `BOOTSTRAP_SERVERS` is a placeholder). The
-> other 6 services (Pub/Sub, Bigtable, Spanner, Postgres, MinIO, Spark)
+> **Caveat:** `make up` starts all 8 always-on emulator containers.
+> `airflow` now reaches a fully healthy state on its own (DB creation,
+> migration, admin user, and webserver/scheduler are wired via
+> `airflow standalone`). `debezium` still won't be functional — its
+> Kafka broker doesn't exist in this compose file yet (`BOOTSTRAP_SERVERS`
+> is a placeholder), deferred to CDC becoming its own phase. The other 7
+> services (Pub/Sub, Bigtable, Spanner, Postgres, MinIO, Spark, Airflow)
 > come up clean.
 
 ### 📌 Local (target — no GCP account needed)
@@ -401,20 +409,22 @@ make cloud-down
 
 ## 🧪 Tests
 
-**Phase 1 tests exist and pass for the ingestion layer built so far** — 9
-tests across contract, integration, and unit suites (Avro bronze schema
-validation, Pub/Sub topic/schema/DLQ setup against the real emulator, and
-the BMRS REST client's retry/backoff behavior), runnable directly via
-`pytest`. The `make test-*` targets below are still stub `echo` commands —
-wiring them to the real `pytest` invocations is a later Phase 1 task
-(`make test-unit`/`test-contract`/`test-integration` today just print a
-placeholder line).
+**Phase 1 tests exist and pass across the whole ingestion→bronze pipeline
+built so far** — 18 tests across contract, integration, and unit suites
+(Avro bronze schema validation including nullable-field coverage, Pub/Sub
+topic/schema/DLQ setup, response normalization, the BMRS REST client's
+retry/backoff behavior, the collector's publish/DLQ routing against a live
+emulator, the Beam windowing pipeline's write to MinIO, and DLQ replay
+logic), runnable directly via `pytest`. The `make test-*` targets below
+are still stub `echo` commands — wiring them to the real `pytest`
+invocations is a later Phase 1 task (`make test-unit`/`test-contract`/
+`test-integration` today just print a placeholder line).
 
 | Target | Runnable today via | Will cover |
 |---|---|---|
-| `pytest tests/contract -v` | direct pytest (3 tests passing) | Bronze Avro schema validation |
-| `pytest tests/unit -v` | direct pytest (4 tests passing) | BMRS client retry/backoff logic; more lands as later tasks complete |
-| `pytest tests/integration -v` | direct pytest, emulator required (2 tests passing) | Pub/Sub topic/schema/DLQ setup against the real emulator; more lands as later tasks complete |
+| `pytest tests/contract -v` | direct pytest (4 tests passing) | Bronze Avro schema validation, incl. nullable fields |
+| `pytest tests/unit -v` | direct pytest (10 tests passing) | BMRS client retry/backoff, response normalization, DLQ replay logic |
+| `pytest tests/integration -v` | direct pytest, emulator required (4 tests passing) | Pub/Sub topic/schema/DLQ setup, collector publish/DLQ routing, Beam pipeline → MinIO — all against real local emulators |
 | `make test-data` | not yet — stub | Data-quality assertions — schema, null thresholds, referential checks |
 | `make test-agents` | not yet — stub | Golden-question CI eval set — SQL correctness, retrieval precision, out-of-scope refusal |
 
@@ -444,11 +454,11 @@ No numbers are reported until they're real. See Roadmap below.
   end-to-end locally.
 - **ENTSO-E token not yet requested** (registration has a ~3 business-day
   lead time) — EU sources are out of scope until it lands.
-- **Phase 1 pipeline code is partial** — the Avro bronze contract, Pub/Sub
-  topic/schema/DLQ setup, and the BMRS REST client are built and tested;
-  normalization, the collector's publish/DLQ entrypoint, the Beam
-  windowing pipeline, and the replay DAG are not yet written. `make seed`
-  and `make pipeline` stay stubs until those land.
+- **Phase 1 pipeline code is complete but not yet wired into `make`** —
+  every ingestion→bronze component (normalization, the collector, the
+  Beam windowing pipeline, DLQ replay) is built, tested, and independently
+  verified against the live local stack; only `make seed`/`make pipeline`
+  wiring, CI lint/test steps, and doc corrections remain.
 - **Conversational Analytics API is preview-era** — its pricing must be
   re-verified before any demo window enables it.
 
@@ -457,9 +467,11 @@ No numbers are reported until they're real. See Roadmap below.
 - `Phase 0` — Scaffolding (this README, ADRs, exam-guide map, Terraform
   skeleton, CI skeleton, docker-compose skeleton) — done
 - `Phase 1` — Stream ingest → bronze on local emulators — **current phase,
-  in progress** (Avro bronze contract, Pub/Sub topic/schema/DLQ setup, and
-  the BMRS REST client are built and tested; normalization, the collector
-  entrypoint, the Beam pipeline, and the replay DAG remain)
+  in progress** (8 of 11 tasks + 2 ad hoc fixes complete: Avro bronze
+  contract, Pub/Sub topic/schema/DLQ setup, BMRS REST client,
+  normalization, the collector entrypoint, the Beam pipeline, and the DLQ
+  replay DAG are all built and tested; Makefile wiring, CI lint/test
+  steps, and doc corrections remain)
 - `Phase 2` — Bitemporal restatement engine + reconciliation test suite
 - `Phase 3` — Batch backfill, BigLake/Iceberg, SCD2 dims, gold marts
 - `Phase 4` — Governance: Dataplex, DLP, policy tags, Analytics Hub
