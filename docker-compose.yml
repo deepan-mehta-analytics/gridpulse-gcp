@@ -56,6 +56,8 @@ services:
       POSTGRES_DB: gridpulse_ops           # synthetic operational schema database — the one Debezium CDC-watches
     ports:
       - "127.0.0.1:5432:5432"             # loopback-only: never expose the local DB to the LAN
+    volumes:
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d  # runs 01-create-airflow-db.sql on first (fresh) container start
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U gridpulse"]  # wait for Postgres to accept connections
       interval: 10s
@@ -113,6 +115,7 @@ services:
   # ── Orchestration ─────────────────────────────────────────────
   airflow:                                # local twin of Cloud Composer
     image: apache/airflow:2.10.4          # pinned Airflow version
+    command: ["standalone"]               # airflow's own single-command local-dev mode: runs db migrate, creates an admin user, and serves webserver+scheduler+triggerer together (LocalExecutor needs a scheduler process for DAG runs to actually execute)
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor  # single-node executor, fine for local dev
       # Deliberately a DIFFERENT database (gridpulse_airflow) from gridpulse_ops:
@@ -126,13 +129,17 @@ services:
       # is Phase 1 Postgres init-script work, alongside the rest of Airflow's
       # webserver wiring (DB migration, admin user, entrypoint command).
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://gridpulse:${POSTGRES_PASSWORD:-gridpulse_local_pg}@postgres/gridpulse_airflow"
+      PUBSUB_EMULATOR_HOST: pubsub-emulator:8085  # bmrs_dlq_replay's pubsub_v1 clients route here instead of real GCP (same var bmrs-collector uses above)
     depends_on:
       postgres:
         condition: service_healthy
+      pubsub-emulator:
+        condition: service_healthy         # replay_dlq_messages talks to the emulator at task-run time, needs it up first
     ports:
       - "127.0.0.1:8081:8080"             # Airflow webserver, loopback-only (8080 already used by Spark UI)
     volumes:
       - ./orchestrate/dags:/opt/airflow/dags  # mount DAGs from the repo
+      - ./ingest:/opt/airflow/dags/ingest:ro  # bmrs_dlq_replay_dag.py's replay_logic imports ingest.contracts.pubsub_setup; mounted read-only, next to the DAG so it lands on Airflow's dag-folder sys.path entry
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
