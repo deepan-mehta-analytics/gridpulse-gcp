@@ -101,12 +101,64 @@ bill.
 
 ## 🎯 Business Problem
 
-> GB electricity imbalance prices are settled, then re-settled, then
-> re-settled again — up to four months after the event. A forecast or a
-> cost report built on any single version of that data is quietly wrong
-> the moment the next reconciliation run publishes. How much does that
-> drift cost, and how do you build a warehouse that tells the truth about
-> what it believed at every point in time, not just what it believes now?
+### The problem, in plain English
+
+Every 30 minutes, Great Britain's electricity grid has to balance exactly —
+the amount generated has to match the amount used, to the megawatt. When it
+doesn't (it never does, perfectly), the system operator buys or sells the
+difference at the last minute, and that trade sets an **imbalance price**
+for the period. Every generator and supplier in the country gets billed or
+paid against that price.
+
+Here's the part that trips up most data projects: **that price isn't
+final on the day it's calculated.** Over the following four months, the
+market recalculates it — repeatedly — as better meter readings and
+corrected data come in:
+
+```
+Settlement period 2026-08-14, 18:00–18:30 — the same half-hour, four prices:
+
+  Day of         "initial"  run   →  £82.40 /MWh
+  Next day       "interim"  run   →  £79.10 /MWh   (already 4% different)
+  1 month later  "recon 1"  run   →  £80.60 /MWh
+  4 months later "recon 2"  run   →  £80.90 /MWh   (the figure everyone now bills against)
+```
+
+It's the electricity-market equivalent of a restaurant bill that keeps
+getting quietly revised for months after you paid it — a supplier invoice
+lands late, an ingredient gets recosted — except this happens to **every
+half-hour, for every generator and supplier, every single day.**
+
+### Why that breaks most data pipelines
+
+| A typical "load once and forget" pipeline | What actually happens |
+|---|---|
+| Loads the price the day after settlement | It's already stale — the very next revision lands one day later |
+| Overwrites the old price when a new one arrives | The old number — and everything calculated from it — is gone for good |
+| Answers "what's the imbalance price?" | Can't answer "what price did we *believe* on the day we built that forecast?" |
+| Looks correct in every dashboard | Is quietly wrong from the moment the next reconciliation run publishes |
+
+That last row is the expensive one. A forecast, an invoice, or a cost
+report that was correct against the number available *at the time* becomes
+silently indefensible the moment the number changes underneath it — and
+by the time anyone notices, the original version is long gone.
+
+### What GridPulse does about it
+
+- **Never overwrites a price** — every version, from every settlement run,
+  is kept as its own permanent record, tagged with *when* it was published
+  and *which* reconciliation run produced it.
+- **Answers "as of" questions directly** — "what did this warehouse believe
+  about 14 August at 6pm, as of 1 September?" is a normal query here, not
+  an archaeology project through backup files.
+- **Makes the drift measurable** — instead of a silent, invisible risk,
+  how far a price moves between its first and final version becomes a
+  number you can actually report on.
+
+> **How much does trusting a single version of a "final" number actually
+> cost you — and how do you build a data platform that tells the truth
+> about what it believed at every point in time, not just what it
+> believes right now?**
 
 ---
 
