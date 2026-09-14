@@ -27,7 +27,7 @@ and doc corrections remain — see
 | 7 — Cloud demo window | ⏳ Pending | |
 
 ## Last commit
-ebc8424 docs: expand and beautify README Business Problem section
+69b5a8a fix(compose): use named volumes for postgres/minio, de-fang password fallbacks
 
 ## Metrics
 No results yet — the pipeline isn't wired end-to-end via `make` (individual
