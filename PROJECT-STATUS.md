@@ -27,7 +27,7 @@ and doc corrections remain — see
 | 7 — Cloud demo window | ⏳ Pending | |
 
 ## Last commit
-69b5a8a fix(compose): use named volumes for postgres/minio, de-fang password fallbacks
+24e9711 docs: add evidence statuses to exam map, tone down coverage claims
 
 ## Metrics
 No results yet — the pipeline isn't wired end-to-end via `make` (individual
