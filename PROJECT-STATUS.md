@@ -34,6 +34,11 @@ No results yet — the pipeline isn't wired end-to-end via `make` (individual
 components are built, tested, and verified against the live local stack).
 See README Results section for the five metrics that will populate here.
 
+## Exam coverage
+PDE v4.2: 6 of 19 sub-objectives ✅ shown (local stack), 10 🟡 designed,
+3 ⬜ not started — see `docs/exam-guide-map.md`. Guide re-checked
+2026-09-24: still v4.2, with a pending product-branding update announced.
+
 ## Known gaps
 Dataplex and Datastream have no local emulator twin (cloud-only, evidenced
 via Terraform + recorded walkthrough). ENTSO-E token not yet requested.

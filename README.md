@@ -18,9 +18,11 @@ Nothing is ever overwritten. **"Current state" is just a view over the full
 history**, and any past belief about the numbers can be reconstructed with a
 simple as-of query.
 
-The second design constraint is **exam alignment**: every objective in the
-Google Cloud Professional Data Engineer exam guide v4.2 has a runnable
-artifact somewhere in this repo — not a bullet point in a notes file. The
+The second design constraint is **exam alignment**: the build is planned
+so every objective in the Google Cloud Professional Data Engineer exam
+guide v4.2 ends up with a runnable artifact in this repo — not a bullet
+point in a notes file — and `docs/exam-guide-map.md` tracks honestly which
+ones are already shown (6 of 19 so far, on the local stack). The
 platform runs entirely on **free-tier services and local emulators by
 default**, with real GCP reserved for short, budget-capped demo windows —
 so the whole thing is buildable and rebuildable without a standing cloud
@@ -48,7 +50,7 @@ bill.
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/features/actions)
-[![Google PDE v4.2 Aligned](https://img.shields.io/badge/Google_PDE-v4.2_Aligned-4285F4?style=for-the-badge&logo=googlecloud)](https://cloud.google.com/certification/data-engineer)
+[![Google PDE v4.2 Mapped](https://img.shields.io/badge/Google_PDE_v4.2-6%2F19_shown-4285F4?style=for-the-badge&logo=googlecloud)](docs/exam-guide-map.md)
 [![Status](https://img.shields.io/badge/Status-Phase_1_In_Progress-yellow?style=for-the-badge)](#-known-limitations--roadmap)
 
 ---
@@ -65,8 +67,9 @@ bill.
 - **All open data, zero paid APIs** — Elexon BMRS/IRIS, NESO Carbon
   Intensity, Open-Meteo, EIA, ENTSO-E, and the London smart-meter dataset;
   no market-data subscriptions, no scraping.
-- **Exam-guide-complete** — every sub-objective in the Google Cloud PDE
-  exam guide v4.2 maps to a specific file in this repo; see
+- **Exam-guide mapped** — every sub-objective in the Google Cloud PDE
+  exam guide v4.2 maps to a specific module in this repo, with an evidence
+  status (✅ shown / 🟡 designed / ⬜ not started); see
   `docs/exam-guide-map.md`.
 - **Governance grounded in a real privacy risk** — household smart-meter
   load curves are genuinely re-identifiable; DLP profiling, policy tags,
@@ -164,7 +167,12 @@ by the time anyone notices, the original version is long gone.
 
 ## 🎓 PDE Exam Alignment
 
-| § | Section | Weight | Coverage |
+**Shown so far: 6 of 19 sub-objectives** (✅ on the local emulator stack),
+10 designed, 3 not started — per-row evidence in
+[`docs/exam-guide-map.md`](docs/exam-guide-map.md). The table below is the
+**planned** coverage per section, not a claim that all of it exists yet.
+
+| § | Section | Weight | Planned coverage |
 |---|---|---|---|
 | 1 | Designing data processing systems | ~22% | IAM least-privilege SAs in Terraform, CMEK, DLP-led PII strategy, dev/prod separation, DR runbook, restatement idempotency as explicit ACID decision, migration planning (Datastream, DMS, BQ DTS) |
 | 2 | Ingesting and processing the data | ~25% | Pub/Sub + DLQ + replay, Beam windowing with tuned lateness, Dataproc Serverless, AI data enrichment inside the pipeline, Composer + Workflows, CI/CD |
@@ -172,7 +180,7 @@ by the time anyone notices, the original version is long gone.
 | 4 | Preparing and using data | ~15% | Materialized views + BI Engine, policy-tag masking + DLP, BigQuery ML, embeddings + vector index for RAG, Analytics Hub |
 | 5 | Maintaining and automating | ~18% | BigQuery Editions/reservations vs on-demand, Airflow DAGs with retries/backfill, `INFORMATION_SCHEMA` cost dashboards, Cloud Monitoring alert policies, multi-region failover drill |
 
-Topics most pre-2024 study material misses, covered deliberately here:
+Topics most pre-2024 study material misses, targeted deliberately here:
 
 - AI data enrichment as an **ingestion** concern, not a bolt-on afterthought
 - Prompting LLMs for query generation, framed as a reliability problem
@@ -307,7 +315,7 @@ gridpulse-gcp/
 ├── docker-compose.yml         ← local emulator stack (Pub/Sub, Bigtable, Postgres, MinIO, Spark, Airflow…)
 ├── .env.example                ← placeholder config, no real identifiers
 ├── docs/                       ← exam-guide map, ADRs, data-source + cost docs
-│   ├── exam-guide-map.md      ← every v4.2 sub-objective → file → status
+│   ├── exam-guide-map.md      ← every v4.2 sub-objective → file → evidence status
 │   ├── exam-guide-delta.md    ← tracks changes to the published exam guide
 │   ├── data-sources.md        ← source, licence, cadence, attribution per feed
 │   ├── cost-model.md          ← what each cloud demo window actually costs
@@ -484,8 +492,8 @@ invocations is a later Phase 1 task (`make test-unit`/`test-contract`/
 
 ## 📊 Results / Performance
 
-Phase 0 has nothing measured yet. Metrics that will land here as later
-phases complete:
+Nothing is measured yet (Phase 1 has verified correctness, not
+performance). Metrics that will land here as later phases complete:
 
 - Restatement drift — how far T+0 estimates move by T+4m reconciliation
 - Forecast MAPE vs. the published day-ahead forecast baseline
@@ -559,9 +567,9 @@ patterns. It is labelled as synthetic everywhere it appears, including here
 ## 📚 Study Guide
 
 `docs/exam-guide-map.md` is the master index from exam sub-objective to file
-path to status. Use it to study by building, not by reading notes — every
-row marked `⏳ Pending` is a specific thing in this repo to go implement,
-not a topic to re-read.
+path to evidence status. Use it to study by building, not by reading notes —
+every row marked 🟡 Designed or ⬜ Not started is a specific thing in this
+repo to go implement, not a topic to re-read.
 
 ---
 
@@ -585,9 +593,9 @@ deepan-mehta-analytics.
 **Deepan Mehta**
 
 - **Data Analytics → Data Engineering → AI/ML Engineering** — GridPulse is
-  the current focus: a GCP-native data platform built to cover the Google
-  Cloud Professional Data Engineer exam guide v4.2 end-to-end with runnable
-  artifacts, not notes.
+  the current focus: a GCP-native data platform being built to cover the
+  Google Cloud Professional Data Engineer exam guide v4.2 end-to-end with
+  runnable artifacts, not notes.
 - **Prior background** in ETL pipelines, predictive modelling, and
   analytical databases — the analytics grounding this platform's warehouse
   and marts design builds on.
